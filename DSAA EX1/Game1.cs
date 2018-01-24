@@ -102,7 +102,7 @@ namespace DSAA_Ex1
             Rectangle position3 = new Rectangle(viewport.Width / 2 - 200, viewport.Height / 2, 100, 100);
             //Rectangle position2 = new Rectangle(300, 200, 100, 100);
             //Rectangle position3 = new Rectangle(400, 200, 100, 100);
-
+            
             // Make mouse visible in-game.
             this.IsMouseVisible = true;
 
@@ -144,13 +144,13 @@ namespace DSAA_Ex1
             CPUWin3 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPUWin3");
             CPUWin4 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPUWin4");
 
-            winSounds = new SoundEffect[] { CPUWin1, CPUWin2, CPUWin4 };
+            winSounds = new SoundEffect[] { CPUWin1, CPUWin2, CPUWin3, CPUWin4 };
 
             CPULose1 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPULose");
             CPULose2 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPULose2");
             CPULose3 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPULose3");
 
-            loseSounds = new SoundEffect[] { CPULose1, CPULose3 };
+            loseSounds = new SoundEffect[] { CPULose1, CPULose2, CPULose3 };
 
             CPUMove1 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPUMove1");
             CPUMove2 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPUMove2");
@@ -250,7 +250,7 @@ namespace DSAA_Ex1
                         // What happens when the CPU loses.
                         else
                         {
-                            loseSounds[randomGenerator.Next(0, 1)].Play();
+                            loseSounds[randomGenerator.Next(0, 3)].Play();
                             scorePlayer++;
                             currentState = gameState.WIN;
                         }
