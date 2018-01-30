@@ -38,7 +38,7 @@ namespace DSAA_Ex1
 
         Rectangle[] positions;
 
-        // Declare font for game information.
+        // Declare font for game information. Test.
         SpriteFont gameFont;
 
         // Set up timer.
