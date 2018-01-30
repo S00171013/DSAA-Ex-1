@@ -18,7 +18,7 @@ namespace DSAA_Ex1
         //bool clicked = false;
         //Rectangle boundingRect;
 
-        public string colourName;
+        
 
         public Texture2D Texture { get; set; }
         public Color BoxColour { get; set; }
@@ -28,28 +28,29 @@ namespace DSAA_Ex1
         public string ColourName { get; set; }
         
 
-        public Colour(Game gameIn, Texture2D textureIn, Color colourIn, bool clickedStatusIn, Rectangle boundingRectangleIn)
+        public Colour(Game gameIn, Texture2D textureIn, Color colourIn, bool clickedStatusIn, Rectangle boundingRectangleIn, string colourNameIn)
         {
             myGame = gameIn;
             Texture = textureIn;
             BoxColour = colourIn;
             Clicked = clickedStatusIn;
-            BoundingRectangle = boundingRectangleIn;      
+            BoundingRectangle = boundingRectangleIn;
+            ColourName = colourNameIn;   
             
-            if(BoxColour == Color.Blue)
-            {
-                ColourName = "Blue";
-            }
+            //if(BoxColour == Color.Blue)
+            //{
+            //    ColourName = "Blue";
+            //}
 
-            else if (BoxColour == Color.Red)
-            {
-                ColourName = "Red";
-            }
+            //else if (BoxColour == Color.Red)
+            //{
+            //    ColourName = "Red";
+            //}
 
-            if (BoxColour == Color.Green)
-            {
-                ColourName = "Green";
-            }
+            //if (BoxColour == Color.Green)
+            //{
+            //    ColourName = "Green";
+            //}
 
         }
 

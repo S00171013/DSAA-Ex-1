@@ -28,6 +28,8 @@ namespace DSAA_Ex1
 
         Texture2D blankBox;
 
+        // Colour Management.
+        string[] colourNames = { "Blue", "Red", "Green" };
         Color[] colours = { Color.Blue, Color.Red, Color.Green };
 
         Colour[] colourObjects = new Colour[3];
@@ -38,7 +40,7 @@ namespace DSAA_Ex1
 
         Rectangle[] positions;
 
-        // Declare font for game information. Test.
+        // Declare font for game information.
         SpriteFont gameFont;
 
         // Set up timer.
@@ -133,7 +135,7 @@ namespace DSAA_Ex1
             // Create colour objects.
             for (int i = 0; i < colours.Length; i++)
             {
-                colourObjects[i] = new Colour(this, blankBox, colours[i], false, positions[i]);
+                colourObjects[i] = new Colour(this, blankBox, colours[i], false, positions[i], colourNames[i]);
             }
 
             #region Load sound effects.
