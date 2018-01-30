@@ -28,8 +28,11 @@ namespace DSAA_Ex1
 
         Texture2D blankBox;
 
+        // Colour Management.
+
         Color[] colours = { Color.Blue, Color.Red, Color.Green };
 
+        // DSAA Week 2 - 2 colours added: 
         Colour[] colourObjects = new Colour[3];
 
         Colour selectedColour;
@@ -37,6 +40,9 @@ namespace DSAA_Ex1
         Colour selectedColourCPU;
 
         Rectangle[] positions;
+
+        // More efficient use of positions - Using only one variable.
+        Rectangle startPosition;
 
         // Declare font for game information.
         SpriteFont gameFont;
@@ -51,7 +57,7 @@ namespace DSAA_Ex1
         int scorePlayer = 0;
         int scoreCPU = 0;
 
-        // Sound Effects
+        #region Sound Effects
         private SoundEffect CPUWin1;
         private SoundEffect CPUWin2;
         private SoundEffect CPUWin3;
@@ -61,8 +67,7 @@ namespace DSAA_Ex1
 
         private SoundEffect CPULose1;
         private SoundEffect CPULose2;
-        private SoundEffect CPULose3;
-        
+        private SoundEffect CPULose3; 
 
         SoundEffect[] loseSounds;
 
@@ -70,7 +75,9 @@ namespace DSAA_Ex1
         private SoundEffect CPUMove2;
 
         SoundEffect[] moveSounds;
+        #endregion
 
+        // Declare boolean so that we can track of when the game is still in play.
         bool gameOverOccurred;
 
         public Game1()
@@ -99,9 +106,7 @@ namespace DSAA_Ex1
 
             Rectangle position2 = new Rectangle(viewport.Width / 2 + 200, viewport.Height / 2, 100, 100);
 
-            Rectangle position3 = new Rectangle(viewport.Width / 2 - 200, viewport.Height / 2, 100, 100);
-            //Rectangle position2 = new Rectangle(300, 200, 100, 100);
-            //Rectangle position3 = new Rectangle(400, 200, 100, 100);
+            Rectangle position3 = new Rectangle(viewport.Width / 2 - 200, viewport.Height / 2, 100, 100);         
             
             // Make mouse visible in-game.
             this.IsMouseVisible = true;
@@ -159,8 +164,7 @@ namespace DSAA_Ex1
 
             #endregion
 
-            // TODO: use this.Content to load your game content here
-            // TODO: use this.Content to load your game content here
+            // TODO: use this.Content to load your game content here          
         }
 
         /// <summary>
