@@ -24,21 +24,28 @@ namespace DSAA_Ex1
         // ENUM version
         // enum Color {BLUE, GREEN, RED}
 
-        // Have an array for the colours that the player can choose.
+        // Have an array for the colours that the player can choose. 
 
         Texture2D blankBox;
 
         // Colour Management.
-        string[] colourNames = { "Blue", "Red", "Green" };
-        Color[] colours = { Color.Blue, Color.Red, Color.Green };
+        string[] colourNames = { "Blue", "Red", "Green", "Purple", "Yellow"};
+        Color[] colours = { Color.Blue, Color.Red, Color.Green, Color.Purple, Color.Yellow};
 
-        Colour[] colourObjects = new Colour[3];
+        int positionX = 0;
+        int positionY = 0;
+
+
+        Colour[] colourObjects;
 
         Colour selectedColour;
 
         Colour selectedColourCPU;
 
         Rectangle[] positions;
+
+        // Week 2: Experimentation with positioning.
+        Rectangle startPosition;
 
         // Declare font for game information.
         SpriteFont gameFont;
@@ -53,7 +60,7 @@ namespace DSAA_Ex1
         int scorePlayer = 0;
         int scoreCPU = 0;
 
-        // Sound Effects
+        #region Sound Effects
         private SoundEffect CPUWin1;
         private SoundEffect CPUWin2;
         private SoundEffect CPUWin3;
@@ -65,14 +72,15 @@ namespace DSAA_Ex1
         private SoundEffect CPULose2;
         private SoundEffect CPULose3;
         
-
         SoundEffect[] loseSounds;
 
         private SoundEffect CPUMove1;
         private SoundEffect CPUMove2;
 
         SoundEffect[] moveSounds;
+        #endregion
 
+        // Declare bool to keep track of whether or not the game is over.
         bool gameOverOccurred;
 
         public Game1()
@@ -96,20 +104,21 @@ namespace DSAA_Ex1
             // TODO: Add your initialization logic here   
             Viewport viewport = GraphicsDevice.Viewport;
 
-            // Set positions.
-            Rectangle position1 = new Rectangle(viewport.Width / 2, viewport.Height / 2, 100, 100);
+            // Set up size of array, this line will not have to be altered if more colours are added.
+            colourObjects = new Colour[colours.Length];
 
-            Rectangle position2 = new Rectangle(viewport.Width / 2 + 200, viewport.Height / 2, 100, 100);
+            // Week 2: Set positions.
+            positionX = viewport.Width / 2 -400;
+            positionY = viewport.Height / 2;
 
-            Rectangle position3 = new Rectangle(viewport.Width / 2 - 200, viewport.Height / 2, 100, 100);
-            //Rectangle position2 = new Rectangle(300, 200, 100, 100);
-            //Rectangle position3 = new Rectangle(400, 200, 100, 100);
-            
+            // Set start position for the first box.
+            startPosition = new Rectangle(positionX, positionY, 100, 100);          
+
             // Make mouse visible in-game.
             this.IsMouseVisible = true;
 
             // Set up positions array.
-            positions = new Rectangle[] { position1, position2, position3 };
+            //positions = new Rectangle[] { position1, position2, position3 };
 
             base.Initialize();
         }
@@ -132,10 +141,17 @@ namespace DSAA_Ex1
             // Load texture for the boxes.
             blankBox = Content.Load<Texture2D>("Exercise 1 Assets/Blank Box");
 
-            // Create colour objects.
+            // Create colour objects.          
             for (int i = 0; i < colours.Length; i++)
             {
-                colourObjects[i] = new Colour(this, blankBox, colours[i], false, positions[i], colourNames[i]);
+                // Create colour box.
+                colourObjects[i] = new Colour(this, blankBox, colours[i], false, startPosition, colourNames[i]);
+
+                // Ensure the next box will be to the right of the previous box.
+                positionX += 200;
+
+                // Set the position for the next box to be made.
+                startPosition = new Rectangle(positionX, positionY, 100, 100);
             }
 
             #region Load sound effects.
