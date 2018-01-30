@@ -41,6 +41,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Pointer.cs" />
     <Compile Include="Colour.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
@@ -54,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Exercise 1 Assets\Arrow.png" />
     <Content Include="Content\Exercise 1 Assets\Blank Box.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>

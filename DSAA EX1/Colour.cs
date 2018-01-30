@@ -35,23 +35,7 @@ namespace DSAA_Ex1
             BoxColour = colourIn;
             Clicked = clickedStatusIn;
             BoundingRectangle = boundingRectangleIn;
-            ColourName = colourNameIn;   
-            
-            //if(BoxColour == Color.Blue)
-            //{
-            //    ColourName = "Blue";
-            //}
-
-            //else if (BoxColour == Color.Red)
-            //{
-            //    ColourName = "Red";
-            //}
-
-            //if (BoxColour == Color.Green)
-            //{
-            //    ColourName = "Green";
-            //}
-
+            ColourName = colourNameIn;                          
         }
 
         // Have an update and a draw method! Handle logic in the game 1!
@@ -69,6 +53,7 @@ namespace DSAA_Ex1
                 // ...This colour has been selected by the player.
                 Clicked = true;          
             }
+
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)

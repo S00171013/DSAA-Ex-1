@@ -25,7 +25,6 @@ namespace DSAA_Ex1
         // enum Color {BLUE, GREEN, RED}
 
         // Have an array for the colours that the player can choose. 
-
         Texture2D blankBox;
 
         // Colour Management.
@@ -40,9 +39,7 @@ namespace DSAA_Ex1
 
         Colour selectedColour;
 
-        Colour selectedColourCPU;
-
-        Rectangle[] positions;
+        Colour selectedColourCPU;   
 
         // Week 2: Experimentation with positioning.
         Rectangle startPosition;
@@ -59,6 +56,10 @@ namespace DSAA_Ex1
         // Testing scores.
         int scorePlayer = 0;
         int scoreCPU = 0;
+
+        // Week 2: Set up arrow image.
+        Texture2D arrowImage;
+        Arrow arrowPointer;
 
         #region Sound Effects
         private SoundEffect CPUWin1;
@@ -107,7 +108,7 @@ namespace DSAA_Ex1
             // Set up size of array, this line will not have to be altered if more colours are added.
             colourObjects = new Colour[colours.Length];
 
-            // Week 2: Set positions.
+            // Week 2: Set co-ordinates.
             positionX = viewport.Width / 2 -400;
             positionY = viewport.Height / 2;
 
@@ -115,10 +116,7 @@ namespace DSAA_Ex1
             startPosition = new Rectangle(positionX, positionY, 100, 100);          
 
             // Make mouse visible in-game.
-            this.IsMouseVisible = true;
-
-            // Set up positions array.
-            //positions = new Rectangle[] { position1, position2, position3 };
+            this.IsMouseVisible = true;          
 
             base.Initialize();
         }
@@ -153,6 +151,12 @@ namespace DSAA_Ex1
                 // Set the position for the next box to be made.
                 startPosition = new Rectangle(positionX, positionY, 100, 100);
             }
+
+            // Week 2: Set up Arrow.
+            arrowImage = Content.Load<Texture2D>("Exercise 1 Assets/Arrow");
+            arrowPointer = new Arrow(this, arrowImage, colourObjects[0].BoundingRectangle);
+            
+
 
             #region Load sound effects.
             // I own none of these sound effects.
@@ -335,7 +339,11 @@ namespace DSAA_Ex1
             for (int i = 0; i < colours.Length; i++)
             {
                 colourObjects[i].Draw(spriteBatch);
+                
             }
+
+            arrowPointer.Draw(spriteBatch);
+
 
             spriteBatch.Begin();
 
