@@ -41,7 +41,7 @@ namespace DSAA_Ex1
 
         Colour selectedColourCPU;   
 
-        // Week 2: Experimentation with positioning.
+        // Week 2: Experimentation with positioning. 
         Rectangle startPosition;
 
         // Declare font for game information.
@@ -60,6 +60,9 @@ namespace DSAA_Ex1
         // Week 2: Set up arrow image.
         Texture2D arrowImage;
         Arrow arrowPointer;
+
+        // Week 2 - Set up counter to keep track of which colour is highlighted.
+        int selectCounter = 0;
 
         #region Sound Effects
         private SoundEffect CPUWin1;
@@ -113,7 +116,14 @@ namespace DSAA_Ex1
             positionY = viewport.Height / 2;
 
             // Set start position for the first box.
-            startPosition = new Rectangle(positionX, positionY, 100, 100);          
+            startPosition = new Rectangle(positionX, positionY, 100, 100);
+
+            // Week 2: Set up Arrow.
+            arrowImage = Content.Load<Texture2D>("Exercise 1 Assets/Arrow");
+            arrowPointer = new Arrow(this, arrowImage, new Rectangle(startPosition.X, startPosition.Y-100, startPosition.Width, startPosition.Height));
+
+            // Set up Input Manager class.
+            new InputManager(this);
 
             // Make mouse visible in-game.
             this.IsMouseVisible = true;          
@@ -151,13 +161,7 @@ namespace DSAA_Ex1
                 // Set the position for the next box to be made.
                 startPosition = new Rectangle(positionX, positionY, 100, 100);
             }
-
-            // Week 2: Set up Arrow.
-            arrowImage = Content.Load<Texture2D>("Exercise 1 Assets/Arrow");
-            arrowPointer = new Arrow(this, arrowImage, colourObjects[0].BoundingRectangle);
-            
-
-
+                                  
             #region Load sound effects.
             // I own none of these sound effects.
             // Sound effects are owned by Atlus Co.
@@ -218,6 +222,32 @@ namespace DSAA_Ex1
                     {
                         colourObjects[i].Update(gameTime);
                     }
+
+                    // Week 2 - Testing Arrow Selection.
+                    if (InputManager.IsKeyPressed(Keys.Right))
+                    {
+                        #region Ensure the arrow will cycle from the last box back to the first box.
+                        if (selectCounter == colourObjects.Length)
+                        {
+                            // Reset the counter to 0.
+                            selectCounter = 0;
+                        }
+                        #endregion
+                                   
+                        // Only move the cursor if the select counter isn't equal to the max number of colours. This will prevent index out of bounds exceptions.                              
+                        if (selectCounter != colourObjects.Length)
+                        {
+                            // Create the new arrow at the new position.
+                            arrowPointer = new Arrow(this, arrowImage, new Rectangle(colourObjects[selectCounter].BoundingRectangle.X, colourObjects[selectCounter].BoundingRectangle.Y - 100,
+                                colourObjects[selectCounter].BoundingRectangle.Width, colourObjects[selectCounter].BoundingRectangle.Width));
+                        }
+
+                        // Increase the selection counter.
+                        selectCounter++;
+                    }
+
+
+
 
                     // Check if any colour has been chosen.
                     for (int i = 0; i < colourObjects.Length; i++)
