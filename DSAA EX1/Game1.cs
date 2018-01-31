@@ -241,13 +241,34 @@ namespace DSAA_Ex1
                             arrowPointer = new Arrow(this, arrowImage, new Rectangle(colourObjects[selectCounter].BoundingRectangle.X, colourObjects[selectCounter].BoundingRectangle.Y - 100,
                                 colourObjects[selectCounter].BoundingRectangle.Width, colourObjects[selectCounter].BoundingRectangle.Width));
                         }
-
                         // Increase the selection counter.
                         selectCounter++;
                     }
 
+                    if (InputManager.IsKeyPressed(Keys.Left))
+                    {
+                        #region Ensure the arrow will cycle from the last box back to the first box.
+                        if (selectCounter == 0)
+                        {
+                            // Reset the counter to the max number of colours.
+                            selectCounter = colourObjects.Length;
+                        }
+                        #endregion
 
+                        // Only move the cursor if the select counter isn't equal to the max number of colours. This will prevent index out of bounds exceptions.                              
+                        if (selectCounter != 0)
+                        {
+                            // Create the new arrow at the new position.
+                            arrowPointer = new Arrow(this, arrowImage, new Rectangle(colourObjects[selectCounter].BoundingRectangle.X, colourObjects[selectCounter].BoundingRectangle.Y - 100,
+                                colourObjects[selectCounter].BoundingRectangle.Width, colourObjects[selectCounter].BoundingRectangle.Width));
 
+                            
+                        }
+
+                        // Increase the selection counter.
+                        selectCounter--;
+
+                    }
 
                     // Check if any colour has been chosen.
                     for (int i = 0; i < colourObjects.Length; i++)
