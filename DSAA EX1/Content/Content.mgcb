@@ -134,3 +134,9 @@
 /processorParam:TextureFormat=Color
 /build:Exercise 1 Assets/Arrow.png
 
+#begin Exercise 1 BGM/4- 23 Toa Defense.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Exercise 1 BGM/4- 23 Toa Defense.mp3
+

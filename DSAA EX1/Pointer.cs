@@ -15,8 +15,7 @@ namespace DSAA_Ex1
         public Texture2D Texture { get; set; }
         public Rectangle BoundingRectangle { get; set; }
 
-
-
+        // Constructor
         public Arrow(Game gameIn, Texture2D textureIn, Rectangle boundingRectangleIn)
         {
             myGame = gameIn;
@@ -24,6 +23,7 @@ namespace DSAA_Ex1
             BoundingRectangle = boundingRectangleIn;
         }
 
+        // Draw method.
         public virtual void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Begin();

@@ -58,6 +58,7 @@
   <ItemGroup>
     <Content Include="Content\Exercise 1 Assets\Arrow.png" />
     <Content Include="Content\Exercise 1 Assets\Blank Box.png" />
+    <Content Include="Content\Exercise 1 BGM\4- 23 Toa Defense.mp3" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>

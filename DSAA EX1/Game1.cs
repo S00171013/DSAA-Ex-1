@@ -15,32 +15,29 @@ namespace DSAA_Ex1
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        // Set up enum for the game's states.
         public enum gameState { PLAYERMOVE, CPUMOVE, WIN, LOSE, GAMEOVER }
-
         public gameState currentState;
 
         // Set up random generator.
         Random randomGenerator = new Random();
 
-        // ENUM version
-        // enum Color {BLUE, GREEN, RED}
-
-        // Have an array for the colours that the player can choose. 
+        // Declare variable for a box texture. 
         Texture2D blankBox;
 
-        // Colour Management.
+        #region Colour Management.
         string[] colourNames = { "Blue", "Red", "Green", "Purple", "Yellow" };
         Color[] colours = { Color.Blue, Color.Red, Color.Green, Color.Purple, Color.Yellow };
 
         int positionX = 0;
         int positionY = 0;
 
-
         Colour[] colourObjects;
 
         Colour selectedColour;
 
         Colour selectedColourCPU;
+        #endregion
 
         // Week 2: Experimentation with positioning. 
         Rectangle startPosition;
@@ -53,7 +50,7 @@ namespace DSAA_Ex1
         int limit = 0;
 
         // Set a countDuration value to 1 for every second.
-        float countDuration = 1f; 
+        float countDuration = 1f;
         float currentTime = 0f;
 
         // Testing scores.
@@ -87,7 +84,7 @@ namespace DSAA_Ex1
         SoundEffect[] moveSounds;
         #endregion
 
-        // Music?
+        // Declare variable for backing track.
         Song backingTrack;
 
         // Declare bool to keep track of whether or not the game is over.
@@ -197,6 +194,17 @@ namespace DSAA_Ex1
             moveSounds = new SoundEffect[] { CPUMove1, CPUMove2 };
 
             #endregion
+
+            #region Set up BGM.
+            // I do not own this music. It is the property of Atlus co.
+            // Track by: Atsushi Kitajoh.
+            backingTrack = Content.Load<Song>("Exercise 1 BGM/4- 23 Toa Defense");
+
+            // Set volume.
+            MediaPlayer.Volume = 0f;
+            MediaPlayer.IsRepeating = true;
+            #endregion
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -218,6 +226,14 @@ namespace DSAA_Ex1
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            #region Play backing track.
+            if (MediaPlayer.Volume != 0.4f)
+            {
+                MediaPlayer.Volume += 0.4f;
+                MediaPlayer.Play(backingTrack);           
+            }
+            #endregion
 
             switch (currentState)
             {
@@ -297,8 +313,8 @@ namespace DSAA_Ex1
                         counter--;
 
                         // "use up" the time
-                        currentTime -= countDuration; 
-                                                      
+                        currentTime -= countDuration;
+
 
                         // Play sound effect when the CPU's move is revealed.               
                         if (counter == 2)
@@ -321,7 +337,7 @@ namespace DSAA_Ex1
                         {
                             // Add onto the CPU's score.
                             // To make the game fairer on the CPU, the CPU will gain all of the player's points as well as the value of their chosen box if they win the round.                                  
-                            scoreCPU += scorePlayer + selectedColourCPU.ID; 
+                            scoreCPU += scorePlayer + selectedColourCPU.ID;
 
 
                             // Only play the win sound if the winning score hasn't been reached yet. This will prevent sound effects overlapping.
@@ -337,9 +353,9 @@ namespace DSAA_Ex1
 
                         #region What happens when the CPU loses.
                         else
-                        {                 
+                        {
                             // Add onto the player's score.          
-                            scorePlayer+= selectedColour.ID;
+                            scorePlayer += selectedColour.ID;
 
                             // Only play the lose sound if the winning score hasn't been reached yet. This will prevent sound effects overlapping.
                             if (scorePlayer < 500)
@@ -351,7 +367,7 @@ namespace DSAA_Ex1
                             currentState = gameState.WIN;
                         }
                         #endregion
-                    }                                    
+                    }
                     break;
                 #endregion
 
@@ -431,7 +447,7 @@ namespace DSAA_Ex1
             spriteBatch.Begin();
 
             // Display the player's score.
-            spriteBatch.DrawString(gameFont, "Player: " + scorePlayer, new Vector2(400, 600), Color.White);           
+            spriteBatch.DrawString(gameFont, "Player: " + scorePlayer, new Vector2(400, 600), Color.White);
 
             // Display different messages depending on the game's current state.
             switch (currentState)
@@ -446,7 +462,7 @@ namespace DSAA_Ex1
 
                     // Display the controls to the player.
                     spriteBatch.DrawString(gameFont, "Use Enter key to select.", new Vector2(510, 70), Color.White);
-                    spriteBatch.DrawString(gameFont, "Use left and right arrow keys or mouse.", new Vector2(235, 480), Color.White);                   
+                    spriteBatch.DrawString(gameFont, "Use left and right arrow keys or mouse.", new Vector2(235, 480), Color.White);
                     break;
                 #endregion
 
@@ -458,7 +474,7 @@ namespace DSAA_Ex1
 
                     // Draw the CPU's message.
                     spriteBatch.DrawString(gameFont, "My Move.", new Vector2(510, 70), Color.White);
-                                     
+
                     if (counter <= 2)
                     {
                         // Display what the CPU chose.
