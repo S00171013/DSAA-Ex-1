@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 namespace DSAA_Ex1
 {
@@ -50,7 +51,9 @@ namespace DSAA_Ex1
         // Set up timer.
         int counter = 4;
         int limit = 0;
-        float countDuration = 1f; //every  1s.
+
+        // Set a countDuration value to 1 for every second.
+        float countDuration = 1f; 
         float currentTime = 0f;
 
         // Testing scores.
@@ -84,8 +87,18 @@ namespace DSAA_Ex1
         SoundEffect[] moveSounds;
         #endregion
 
+        // Music?
+        Song backingTrack;
+
         // Declare bool to keep track of whether or not the game is over.
         bool gameOverOccurred;
+
+        // Declare minimum and maximum value for a colour object's ID Value.
+        const int MINIMUM_COLOUR_VALUE = 10;
+        const int MAXIMUM_COLOUR_VALUE = 99;
+
+        // Set a winning score for the game. The first player to reach this score will win the game.
+        int winningScore = 500;
 
         public Game1()
         {
@@ -153,7 +166,7 @@ namespace DSAA_Ex1
             for (int i = 0; i < colours.Length; i++)
             {
                 // Create colour box.
-                colourObjects[i] = new Colour(this, blankBox, colours[i], false, startPosition, colourNames[i]);
+                colourObjects[i] = new Colour(this, blankBox, colours[i], false, startPosition, colourNames[i], randomGenerator.Next(MINIMUM_COLOUR_VALUE, MAXIMUM_COLOUR_VALUE), gameFont);
 
                 // Ensure the next box will be to the right of the previous box.
                 positionX += 200;
@@ -170,13 +183,13 @@ namespace DSAA_Ex1
             CPUWin3 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPUWin3");
             CPUWin4 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPUWin4");
 
-            winSounds = new SoundEffect[] { CPUWin1, CPUWin2, CPUWin3, CPUWin4 };
+            winSounds = new SoundEffect[] { CPUWin1, CPUWin2, CPUWin4 };
 
             CPULose1 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPULose");
             CPULose2 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPULose2");
             CPULose3 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPULose3");
 
-            loseSounds = new SoundEffect[] { CPULose1, CPULose2, CPULose3 };
+            loseSounds = new SoundEffect[] { CPULose1, CPULose2 };
 
             CPUMove1 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPUMove1");
             CPUMove2 = Content.Load<SoundEffect>("Exercise 1 Sound Effects/CPUMove2");
@@ -184,8 +197,6 @@ namespace DSAA_Ex1
             moveSounds = new SoundEffect[] { CPUMove1, CPUMove2 };
 
             #endregion
-
-            // TODO: use this.Content to load your game content here
             // TODO: use this.Content to load your game content here
         }
 
@@ -277,15 +288,17 @@ namespace DSAA_Ex1
 
                 #region What occurs when it is the CPU's turn.
                 case gameState.CPUMOVE:
-
                     // Experimenting with countdown timer.
                     currentTime += (float)gameTime.ElapsedGameTime.TotalSeconds; //Time passed since last Update() 
 
+                    #region Handle countdown and sound effects.
                     if (currentTime >= countDuration)
                     {
                         counter--;
-                        currentTime -= countDuration; // "use up" the time
-                                                      //any actions to perform
+
+                        // "use up" the time
+                        currentTime -= countDuration; 
+                                                      
 
                         // Play sound effect when the CPU's move is revealed.               
                         if (counter == 2)
@@ -298,61 +311,91 @@ namespace DSAA_Ex1
                             selectedColourCPU = colourObjects[randomGenerator.Next(0, colourObjects.Length)];
                         }
                     }
+                    #endregion
 
+                    // Determine who won the round.
                     if (counter <= limit)
                     {
-                        // counter = 0;//Reset the counter;
-                        //any actions to perform
-
-                        // What happens when the CPU wins.
+                        #region What happens when the CPU wins.
                         if (selectedColourCPU == selectedColour)
                         {
-                            winSounds[randomGenerator.Next(0, 2)].Play();
-                            scoreCPU++;
+                            // Add onto the CPU's score.
+                            // To make the game fairer on the CPU, the CPU will gain all of the player's points as well as the value of their chosen box if they win the round.                                  
+                            scoreCPU += scorePlayer + selectedColourCPU.ID; 
+
+
+                            // Only play the win sound if the winning score hasn't been reached yet. This will prevent sound effects overlapping.
+                            if (scoreCPU < winningScore)
+                            {
+                                winSounds[randomGenerator.Next(0, winSounds.Length)].Play();
+                            }
+
+                            // Change game state.
                             currentState = gameState.LOSE;
                         }
+                        #endregion
 
-                        // What happens when the CPU loses.
+                        #region What happens when the CPU loses.
                         else
-                        {
-                            loseSounds[randomGenerator.Next(0, 3)].Play();
-                            scorePlayer++;
+                        {                 
+                            // Add onto the player's score.          
+                            scorePlayer+= selectedColour.ID;
+
+                            // Only play the lose sound if the winning score hasn't been reached yet. This will prevent sound effects overlapping.
+                            if (scorePlayer < 500)
+                            {
+                                loseSounds[randomGenerator.Next(0, loseSounds.Length)].Play();
+                            }
+
+                            // Change game state.
                             currentState = gameState.WIN;
                         }
-                    }
-                    //selectedColourCPU = colourObjects[randomGenerator.Next(0, colourObjects.Length)];                  
+                        #endregion
+                    }                                    
                     break;
                 #endregion
 
                 #region What occurs when a round has ended.
                 default:
-                    if (Keyboard.GetState().IsKeyDown(Keys.Y))
-                    {
-                        currentState = gameState.PLAYERMOVE;
-                    }
 
-                    else if (Keyboard.GetState().IsKeyDown(Keys.N))
+                    if (scorePlayer >= winningScore || scoreCPU >= winningScore)
                     {
                         currentState = gameState.GAMEOVER;
+                    }
+
+                    else
+                    {
+                        if (Keyboard.GetState().IsKeyDown(Keys.Y))
+                        {
+                            currentState = gameState.PLAYERMOVE;
+                        }
+
+                        else if (Keyboard.GetState().IsKeyDown(Keys.N))
+                        {
+                            currentState = gameState.GAMEOVER;
+                        }
                     }
                     break;
                 #endregion
 
                 #region What will occur when the game has ended.
                 case gameState.GAMEOVER:
+                    // What happens when the CPU wins.
                     if (scorePlayer < scoreCPU && gameOverOccurred == false)
                     {
                         CPUWin3.Play();
                         gameOverOccurred = true;
                     }
 
-                    if (scorePlayer > scoreCPU && gameOverOccurred == false)
+                    // What happens when the player wins.
+                    else if (scorePlayer > scoreCPU && gameOverOccurred == false)
                     {
-                        CPULose2.Play();
+                        CPULose3.Play();
                         gameOverOccurred = true;
                     }
 
-                    if (scorePlayer == scoreCPU && gameOverOccurred == false)
+                    // What happens when the game ends in a tie.
+                    else if (scorePlayer == scoreCPU && gameOverOccurred == false)
                     {
                         CPULose3.Play();
                         gameOverOccurred = true;
@@ -361,10 +404,6 @@ namespace DSAA_Ex1
                     break;
                     #endregion
             }
-
-
-
-
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -379,35 +418,51 @@ namespace DSAA_Ex1
             GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
+
+            // Draw the boxes.
             for (int i = 0; i < colours.Length; i++)
             {
                 colourObjects[i].Draw(spriteBatch);
-
             }
 
+            // Draw the arrow.
             arrowPointer.Draw(spriteBatch);
-
 
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(gameFont, "Player: " + scorePlayer, new Vector2(400, 600), Color.White);
+            // Display the player's score.
+            spriteBatch.DrawString(gameFont, "Player: " + scorePlayer, new Vector2(400, 600), Color.White);           
 
+            // Display different messages depending on the game's current state.
             switch (currentState)
             {
-
                 #region What will display during the player's turn.
                 case gameState.PLAYERMOVE:
+                    // Prompt the player to select a colour.
                     spriteBatch.DrawString(gameFont, "Choose a Colour.", new Vector2(510, 10), Color.White);
+
+                    // Display the score value that will win the game. 
+                    spriteBatch.DrawString(gameFont, "First to " + winningScore + " wins!", new Vector2(510, 210), Color.White);
+
+                    // Display the controls to the player.
+                    spriteBatch.DrawString(gameFont, "Use Enter key to select.", new Vector2(510, 70), Color.White);
+                    spriteBatch.DrawString(gameFont, "Use left and right arrow keys or mouse.", new Vector2(235, 480), Color.White);                   
                     break;
                 #endregion
 
                 #region What will display during the CPU's turn.
                 case gameState.CPUMOVE:
-                    spriteBatch.DrawString(gameFont, "My Move.", new Vector2(510, 10), Color.White);
 
+                    // Tell the player which colour they picked.
+                    spriteBatch.DrawString(gameFont, "You Chose " + selectedColour.ColourName + ".", new Vector2(510, 10), selectedColour.BoxColour);
+
+                    // Draw the CPU's message.
+                    spriteBatch.DrawString(gameFont, "My Move.", new Vector2(510, 70), Color.White);
+                                     
                     if (counter <= 2)
                     {
-                        spriteBatch.DrawString(gameFont, "I Choose " + selectedColourCPU.ColourName + ".", new Vector2(510, 70), selectedColourCPU.BoxColour);
+                        // Display what the CPU chose.
+                        spriteBatch.DrawString(gameFont, "I Choose " + selectedColourCPU.ColourName + ".", new Vector2(510, 130), selectedColourCPU.BoxColour);
                     }
                     break;
                 #endregion
@@ -433,23 +488,60 @@ namespace DSAA_Ex1
 
                     if (scoreCPU > scorePlayer)
                     {
-                        spriteBatch.DrawString(gameFont, "Better luck next time.", new Vector2(510, 100), Color.White);
+                        #region Display Lose Message.
+                        // If the player quits early.
+                        if (scoreCPU < winningScore)
+                        {
+                            spriteBatch.DrawString(gameFont, "Giving up so soon?", new Vector2(510, 100), Color.White);
+                        }
+
+                        // Otherwise...
+                        else
+                        {
+                            spriteBatch.DrawString(gameFont, "Better luck next time.", new Vector2(510, 100), Color.White);
+                        }
+                        #endregion
                     }
 
                     else if (scoreCPU < scorePlayer)
                     {
-                        spriteBatch.DrawString(gameFont, "Well Done.", new Vector2(510, 100), Color.White);
+                        #region Display Win message
+                        // If the player quits early.
+                        if (scorePlayer < winningScore)
+                        {
+                            spriteBatch.DrawString(gameFont, "Leaving before I can catch up?", new Vector2(510, 100), Color.White);
+                        }
+
+                        // Otherwise...
+                        else
+                        {
+                            spriteBatch.DrawString(gameFont, "Well Done.", new Vector2(510, 100), Color.White);
+                        }
+                        #endregion
                     }
 
                     else if (scoreCPU == scorePlayer)
                     {
-                        spriteBatch.DrawString(gameFont, "It seems we are quite evenly matched.", new Vector2(310, 100), Color.White);
+                        #region Display Draw message.
+                        // If the player quits early.
+                        if (scorePlayer < winningScore && scoreCPU < winningScore)
+                        {
+                            spriteBatch.DrawString(gameFont, "...and it was just getting interesting.", new Vector2(440, 100), Color.White);
+                        }
+
+                        // Otherwise.
+                        else
+                        {
+                            spriteBatch.DrawString(gameFont, "It seems we are quite evenly matched.", new Vector2(310, 100), Color.White);
+                        }
+                        #endregion
                     }
 
                     break;
                     #endregion
             }
 
+            // Display the CPU's score.
             spriteBatch.DrawString(gameFont, "CPU: " + scoreCPU, new Vector2(800, 600), Color.White);
 
             spriteBatch.End();
@@ -470,10 +562,9 @@ namespace DSAA_Ex1
             }
             #endregion
 
+            // Change the arrow's position to that of the highlighted box.
             arrowPointer.BoundingRectangle = new Rectangle(colourObjects[selectCounter].BoundingRectangle.X, colourObjects[selectCounter].BoundingRectangle.Y - 60,
                colourObjects[selectCounter].BoundingRectangle.Width, colourObjects[selectCounter].BoundingRectangle.Width);
-
-
         }
 
         public void MoveLeft()
