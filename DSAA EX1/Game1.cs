@@ -28,8 +28,8 @@ namespace DSAA_Ex1
         Texture2D blankBox;
 
         // Colour Management.
-        string[] colourNames = { "Blue", "Red", "Green", "Purple", "Yellow"};
-        Color[] colours = { Color.Blue, Color.Red, Color.Green, Color.Purple, Color.Yellow};
+        string[] colourNames = { "Blue", "Red", "Green", "Purple", "Yellow" };
+        Color[] colours = { Color.Blue, Color.Red, Color.Green, Color.Purple, Color.Yellow };
 
         int positionX = 0;
         int positionY = 0;
@@ -39,7 +39,7 @@ namespace DSAA_Ex1
 
         Colour selectedColour;
 
-        Colour selectedColourCPU;   
+        Colour selectedColourCPU;
 
         // Week 2: Experimentation with positioning. 
         Rectangle startPosition;
@@ -75,7 +75,7 @@ namespace DSAA_Ex1
         private SoundEffect CPULose1;
         private SoundEffect CPULose2;
         private SoundEffect CPULose3;
-        
+
         SoundEffect[] loseSounds;
 
         private SoundEffect CPUMove1;
@@ -112,7 +112,7 @@ namespace DSAA_Ex1
             colourObjects = new Colour[colours.Length];
 
             // Week 2: Set co-ordinates.
-            positionX = viewport.Width / 2 -400;
+            positionX = viewport.Width / 2 - 400;
             positionY = viewport.Height / 2;
 
             // Set start position for the first box.
@@ -120,13 +120,13 @@ namespace DSAA_Ex1
 
             // Week 2: Set up Arrow.
             arrowImage = Content.Load<Texture2D>("Exercise 1 Assets/Arrow");
-            arrowPointer = new Arrow(this, arrowImage, new Rectangle(startPosition.X, startPosition.Y-100, startPosition.Width, startPosition.Height));
+            arrowPointer = new Arrow(this, arrowImage, new Rectangle(startPosition.X, startPosition.Y - 60, startPosition.Width, startPosition.Height));
 
             // Set up Input Manager class.
             new InputManager(this);
 
             // Make mouse visible in-game.
-            this.IsMouseVisible = true;          
+            this.IsMouseVisible = true;
 
             base.Initialize();
         }
@@ -161,7 +161,7 @@ namespace DSAA_Ex1
                 // Set the position for the next box to be made.
                 startPosition = new Rectangle(positionX, positionY, 100, 100);
             }
-                                  
+
             #region Load sound effects.
             // I own none of these sound effects.
             // Sound effects are owned by Atlus Co.
@@ -214,69 +214,61 @@ namespace DSAA_Ex1
                 case gameState.PLAYERMOVE:
                     // Update colour objects.
 
-                    // Reset what the computer selected as well as the counter.
+                    // Reset what the computer selected as well as the time counter.
                     selectedColourCPU = null;
                     counter = 4;
 
+                    // Update the colour objects.
                     for (int i = 0; i < colourObjects.Length; i++)
                     {
                         colourObjects[i].Update(gameTime);
                     }
 
-                    // Week 2 - Testing Arrow Selection.
+                    #region Week 2 - Arrow Selection                   
                     if (InputManager.IsKeyPressed(Keys.Right))
                     {
-                        #region Ensure the arrow will cycle from the last box back to the first box.
-                        if (selectCounter == colourObjects.Length)
-                        {
-                            // Reset the counter to 0.
-                            selectCounter = 0;
-                        }
-                        #endregion
-                                   
-                        // Only move the cursor if the select counter isn't equal to the max number of colours. This will prevent index out of bounds exceptions.                              
-                        if (selectCounter != colourObjects.Length)
-                        {
-                            // Create the new arrow at the new position.
-                            arrowPointer = new Arrow(this, arrowImage, new Rectangle(colourObjects[selectCounter].BoundingRectangle.X, colourObjects[selectCounter].BoundingRectangle.Y - 100,
-                                colourObjects[selectCounter].BoundingRectangle.Width, colourObjects[selectCounter].BoundingRectangle.Width));
-                        }
-                        // Increase the selection counter.
-                        selectCounter++;
+                        MoveRight();
                     }
 
-                    if (InputManager.IsKeyPressed(Keys.Left))
+                    else if (InputManager.IsKeyPressed(Keys.Left))
                     {
-                        #region Ensure the arrow will cycle from the last box back to the first box.
-                        if (selectCounter == 0)
-                        {
-                            // Reset the counter to the max number of colours.
-                            selectCounter = colourObjects.Length;
-                        }
-                        #endregion
-
-                        // Only move the cursor if the select counter isn't equal to the max number of colours. This will prevent index out of bounds exceptions.                              
-                        if (selectCounter != 0)
-                        {
-                            // Create the new arrow at the new position.
-                            arrowPointer = new Arrow(this, arrowImage, new Rectangle(colourObjects[selectCounter].BoundingRectangle.X, colourObjects[selectCounter].BoundingRectangle.Y - 100,
-                                colourObjects[selectCounter].BoundingRectangle.Width, colourObjects[selectCounter].BoundingRectangle.Width));
-
-                            
-                        }
-
-                        // Increase the selection counter.
-                        selectCounter--;
-
+                        MoveLeft();
                     }
+                    #endregion
 
-                    // Check if any colour has been chosen.
+                    #region Check if any colour has been chosen.
                     for (int i = 0; i < colourObjects.Length; i++)
                     {
                         if (colourObjects[i].Clicked == true)
                         {
+                            #region Highlight the selected colour
+                            // Change arrow position to that of the clicked colour.
+                            arrowPointer.BoundingRectangle = new Rectangle(colourObjects[i].BoundingRectangle.X, colourObjects[i].BoundingRectangle.Y - 60,
+                                    colourObjects[i].BoundingRectangle.Width, colourObjects[i].BoundingRectangle.Width);
+
+                            // Set the select counter to that of the clicked colour's index.
+                            selectCounter = i;
+                            #endregion
+
+                            // Set the clicked colour as "selected".
                             selectedColour = colourObjects[i];
+
+                            // Reset the selected colour's "Clicked" status.
                             colourObjects[i].Clicked = false;
+
+                            // Change the game's state over to the CPU's Turn.
+                            currentState = gameState.CPUMOVE;
+                        }
+                    }
+                    #endregion
+
+                    // When the Enter Key is typed...
+                    if (InputManager.IsKeyPressed(Keys.Enter))
+                    {
+                        // ... Check which colour has been selected.
+                        if (colourObjects[selectCounter].BoundingRectangle.Intersects(arrowPointer.BoundingRectangle))
+                        {
+                            selectedColour = colourObjects[selectCounter];
                             currentState = gameState.CPUMOVE;
                         }
                     }
@@ -294,9 +286,9 @@ namespace DSAA_Ex1
                         counter--;
                         currentTime -= countDuration; // "use up" the time
                                                       //any actions to perform
-                                 
+
                         // Play sound effect when the CPU's move is revealed.               
-                        if(counter == 2)
+                        if (counter == 2)
                         {
                             moveSounds[randomGenerator.Next(0, 2)].Play();
                         }
@@ -308,13 +300,13 @@ namespace DSAA_Ex1
                     }
 
                     if (counter <= limit)
-                    {                        
+                    {
                         // counter = 0;//Reset the counter;
                         //any actions to perform
-                      
+
                         // What happens when the CPU wins.
                         if (selectedColourCPU == selectedColour)
-                        {                         
+                        {
                             winSounds[randomGenerator.Next(0, 2)].Play();
                             scoreCPU++;
                             currentState = gameState.LOSE;
@@ -348,7 +340,7 @@ namespace DSAA_Ex1
 
                 #region What will occur when the game has ended.
                 case gameState.GAMEOVER:
-                    if(scorePlayer < scoreCPU && gameOverOccurred == false)
+                    if (scorePlayer < scoreCPU && gameOverOccurred == false)
                     {
                         CPUWin3.Play();
                         gameOverOccurred = true;
@@ -370,7 +362,7 @@ namespace DSAA_Ex1
                     #endregion
             }
 
-            
+
 
 
             // TODO: Add your update logic here
@@ -390,7 +382,7 @@ namespace DSAA_Ex1
             for (int i = 0; i < colours.Length; i++)
             {
                 colourObjects[i].Draw(spriteBatch);
-                
+
             }
 
             arrowPointer.Draw(spriteBatch);
@@ -398,7 +390,7 @@ namespace DSAA_Ex1
 
             spriteBatch.Begin();
 
-            spriteBatch.DrawString(gameFont, "Player: "+scorePlayer, new Vector2(400, 600), Color.White);
+            spriteBatch.DrawString(gameFont, "Player: " + scorePlayer, new Vector2(400, 600), Color.White);
 
             switch (currentState)
             {
@@ -415,7 +407,7 @@ namespace DSAA_Ex1
 
                     if (counter <= 2)
                     {
-                        spriteBatch.DrawString(gameFont, "I Choose " + selectedColourCPU.ColourName+".", new Vector2(510, 70), selectedColourCPU.BoxColour);
+                        spriteBatch.DrawString(gameFont, "I Choose " + selectedColourCPU.ColourName + ".", new Vector2(510, 70), selectedColourCPU.BoxColour);
                     }
                     break;
                 #endregion
@@ -439,7 +431,7 @@ namespace DSAA_Ex1
                 case gameState.GAMEOVER:
                     spriteBatch.DrawString(gameFont, "Game Over", new Vector2(510, 40), Color.White);
 
-                    if(scoreCPU > scorePlayer)
+                    if (scoreCPU > scorePlayer)
                     {
                         spriteBatch.DrawString(gameFont, "Better luck next time.", new Vector2(510, 100), Color.White);
                     }
@@ -458,11 +450,48 @@ namespace DSAA_Ex1
                     #endregion
             }
 
-            spriteBatch.DrawString(gameFont, "CPU: "+scoreCPU, new Vector2(800, 600), Color.White);
+            spriteBatch.DrawString(gameFont, "CPU: " + scoreCPU, new Vector2(800, 600), Color.White);
 
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        public void MoveRight()
+        {
+            // Increase the selection counter.
+            selectCounter++;
+
+            #region Ensure the arrow will cycle from the last box back to the first box.
+            if (selectCounter == colourObjects.Length)
+            {
+                // Reset the counter to 0.
+                selectCounter = 0;
+            }
+            #endregion
+
+            arrowPointer.BoundingRectangle = new Rectangle(colourObjects[selectCounter].BoundingRectangle.X, colourObjects[selectCounter].BoundingRectangle.Y - 60,
+               colourObjects[selectCounter].BoundingRectangle.Width, colourObjects[selectCounter].BoundingRectangle.Width);
+
+
+        }
+
+        public void MoveLeft()
+        {
+            // Decrease the selection counter.
+            selectCounter--;
+
+            #region Ensure the arrow will cycle from the first box back to the last box.
+            if (selectCounter == -1)
+            {
+                // Reset the counter to the highest box index.
+                selectCounter = colourObjects.Length - 1;
+            }
+            #endregion
+
+            // Change the arrow's position to that of the highlighted box.    
+            arrowPointer.BoundingRectangle = new Rectangle(colourObjects[selectCounter].BoundingRectangle.X, colourObjects[selectCounter].BoundingRectangle.Y - 60,
+               colourObjects[selectCounter].BoundingRectangle.Width, colourObjects[selectCounter].BoundingRectangle.Width);
         }
     }
 }
